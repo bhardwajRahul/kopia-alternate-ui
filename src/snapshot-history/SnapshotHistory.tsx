@@ -22,6 +22,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
+import { usePreferencesContext } from "../core/context/PreferencesContext";
 import { DataGrid } from "../core/DataGrid/DataGrid";
 import { ErrorAlert } from "../core/ErrorAlert/ErrorAlert";
 import FormattedDate from "../core/FormattedDate";
@@ -40,6 +41,7 @@ import RetentionBadge from "./components/RetentionBadge";
 import PinSnapshotModal from "./modals/PinSnapshotModal";
 import UpdateDescriptionModal from "./modals/UpdateDescriptionModal";
 function SnapshotHistory() {
+  const { pageSize: tablePageSize, bytesStringBase2 } = usePreferencesContext();
   const [searchParams] = useSearchParams();
   const [data, setData] = useState<Snapshots>();
   const [selectedRecords, setSelectedRecords] = useState<Snapshot[]>([]);
@@ -135,6 +137,7 @@ function SnapshotHistory() {
           records={data?.snapshots ?? []}
           noRecordsText="No snapshots taken"
           noRecordsIcon={<IconWrapper icon={IconFileDatabase} size={48} />}
+          pageSize={tablePageSize}
           columns={[
             {
               accessor: "startTime",
@@ -204,7 +207,8 @@ function SnapshotHistory() {
               accessor: "summary.size",
               title: "Size",
               textAlign: "center",
-              render: (item) => sizeDisplayName(item.summary.size, false),
+              render: (item) =>
+                sizeDisplayName(item.summary.size, bytesStringBase2),
             },
             { accessor: "summary.files", title: "Files", textAlign: "center" },
             { accessor: "summary.dirs", title: "Dirs", textAlign: "center" },

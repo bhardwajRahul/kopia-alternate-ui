@@ -17,6 +17,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
+import { usePreferencesContext } from "../core/context/PreferencesContext";
 import { DataGrid } from "../core/DataGrid/DataGrid";
 import { ErrorAlert } from "../core/ErrorAlert/ErrorAlert";
 import useApiRequest from "../core/hooks/useApiRequest";
@@ -28,10 +29,12 @@ import RelativeDate from "../core/RelativeDate";
 import RepoTitle from "../core/RepoTitle/RepoTitle";
 import type { SourceInfo, Sources } from "../core/types";
 import { formatOwnerName } from "../utils/formatOwnerName";
+import sizeDisplayName from "../utils/formatSize";
 import { onlyUnique } from "../utils/onlyUnique";
 import UploadingLoader from "./components/UploadingLoader";
 
 function SnapshotsPage() {
+  const { pageSize: tablePageSize, bytesStringBase2 } = usePreferencesContext();
   const [data, setData] = useState<Sources>();
   const [filterState, setFilterState] = useState<"all" | "local" | string>(
     "all"
@@ -146,6 +149,7 @@ function SnapshotsPage() {
           idAccessor="source.path"
           noRecordsText="No snapshots taken"
           noRecordsIcon={<IconWrapper icon={IconFileDatabase} size={48} />}
+          pageSize={tablePageSize}
           columns={[
             {
               accessor: "source.path",
@@ -170,7 +174,16 @@ function SnapshotsPage() {
               accessor: "owner",
               render: (item) => `${item.source.userName}@${item.source.host}`,
             },
-            { accessor: "lastSnapshot.rootEntry.summ.size", title: "Size" },
+            {
+              accessor: "lastSnapshot.rootEntry.summ.size",
+              title: "Size",
+              render: (item) =>
+                item.lastSnapshot?.rootEntry?.summ?.size &&
+                sizeDisplayName(
+                  item.lastSnapshot.rootEntry.summ.size,
+                  bytesStringBase2
+                ),
+            },
             {
               accessor: "lastSnapshot.startTime",
               title: "Last Snapshot",
@@ -239,7 +252,12 @@ function SnapshotsPage() {
                       </Group>
                     );
                   case "UPLOADING": {
-                    return <UploadingLoader data={item.upload} />;
+                    return (
+                      <UploadingLoader
+                        data={item.upload}
+                        bytesStringBase2={bytesStringBase2}
+                      />
+                    );
                   }
 
                   default:
