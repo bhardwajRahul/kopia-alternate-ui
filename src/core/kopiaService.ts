@@ -1,8 +1,14 @@
-import { clientGet, clientPost, clientPut } from "./clientApiFetch";
+import {
+  clientDelete,
+  clientGet,
+  clientPost,
+  clientPut,
+} from "./clientApiFetch";
 import type {
   AlgorithmsList,
   ApiResponse,
   DirManifest,
+  NotificationProfile,
   PoliciesList,
   Policy,
   Preferences,
@@ -122,6 +128,22 @@ function getPreferences(): Promise<ApiResponse<Preferences>> {
 function setPreferences(data: Preferences): Promise<ApiResponse<Preferences>> {
   return clientPut("/api/v1/ui-preferences", data);
 }
+
+function getNotificationProfiles(): Promise<
+  ApiResponse<NotificationProfile[]>
+> {
+  return clientGet("/api/v1/notificationProfiles");
+}
+function createNotificationProfile(
+  profile: NotificationProfile
+): Promise<ApiResponse<NotificationProfile>> {
+  return clientPost("/api/v1/notificationProfiles", profile);
+}
+function deleteNotificationProfile(
+  profileName: string
+): Promise<ApiResponse<unknown>> {
+  return clientDelete(`/api/v1/notificationProfiles/${profileName}`);
+}
 const methods = {
   getSnapshots,
   startSnapshot,
@@ -143,6 +165,9 @@ const methods = {
   getTaskLogs,
   getPreferences,
   setPreferences,
+  getNotificationProfiles,
+  createNotificationProfile,
+  deleteNotificationProfile,
 };
 
 export default methods;
