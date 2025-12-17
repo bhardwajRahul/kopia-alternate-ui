@@ -7,12 +7,15 @@ import {
 import type {
   AlgorithmsList,
   ApiResponse,
+  CreateSnapshotRequest,
   DirManifest,
+  EstimateSnapshotRequest,
   NotificationProfile,
   PoliciesList,
   Policy,
   Preferences,
   ResolvedPolicy,
+  ResolvePath,
   ResolvePolicyRequest,
   RestoreRequest,
   Snapshot,
@@ -155,10 +158,27 @@ function testNotificationProfile(
 ): Promise<ApiResponse<unknown>> {
   return clientPost(`/api/v1/testNotificationProfile`, profile);
 }
+function resolvePath(path: string): Promise<ApiResponse<ResolvePath>> {
+  return clientPost(`/api/v1/paths/resolve`, {
+    path,
+  });
+}
+function estimateSnapshot(
+  data: EstimateSnapshotRequest
+): Promise<ApiResponse<Task>> {
+  return clientPost(`/api/v1/estimate`, data);
+}
+function createSnapshot(
+  data: CreateSnapshotRequest
+): Promise<ApiResponse<Task>> {
+  return clientPost(`/api/v1/sources`, data);
+}
 const methods = {
   getSnapshots,
   startSnapshot,
   getSnapshot,
+  estimateSnapshot,
+  createSnapshot,
   updateDescription,
   getObjects,
   addPin,
@@ -181,6 +201,7 @@ const methods = {
   deleteNotificationProfile,
   testNotificationProfile,
   savePolicy,
+  resolvePath,
 };
 
 export default methods;
