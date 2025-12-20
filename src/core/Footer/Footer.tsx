@@ -1,19 +1,24 @@
-import { AppShellFooter, Group, Indicator, Text, Tooltip } from "@mantine/core";
-import { IconCircleCheck, IconStopwatch } from "@tabler/icons-react";
+import { AppShellFooter, Group, Text, Tooltip } from "@mantine/core";
+import {
+  IconCircleCheck,
+  IconCircleX,
+  IconStopwatch,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
-import { useAppContext } from "../context/AppContext";
+import { useServerInstanceContext } from "../context/ServerInstanceContext";
 import useApiRequest from "../hooks/useApiRequest";
 import { useInterval } from "../hooks/useInterval";
 import IconWrapper from "../IconWrapper";
-import kopiaService from "../kopiaService";
 import type { TasksSummary } from "../types";
+import { ConnectionInfo } from "./ConnectionInfo";
 
 export function Footer() {
-  const { repoStatus } = useAppContext();
+  const { kopiaService } = useServerInstanceContext();
   const [data, setData] = useState<TasksSummary>({
     CANCELED: 0,
     RUNNING: 0,
     SUCCESS: 0,
+    FAILED: 0,
   });
   const { execute } = useApiRequest({
     action: () => kopiaService.getTasksSummary(),
@@ -32,24 +37,7 @@ export function Footer() {
     <AppShellFooter p="xs">
       <Group justify="space-between">
         <Group>
-          <Indicator
-            position="middle-start"
-            processing={repoStatus.connected}
-            color={repoStatus.connected ? "green" : "red"}
-          >
-            {repoStatus.connected ? (
-              <Text ml="xs" fz="xs">
-                Connected to:{" "}
-                <Text fw="bold" fz="xs" span>
-                  {repoStatus.description}
-                </Text>
-              </Text>
-            ) : (
-              <Text ml="xs" fz="xs">
-                Disconnected
-              </Text>
-            )}
-          </Indicator>
+          <ConnectionInfo />
         </Group>
         <Group>
           <Tooltip label={`${data.SUCCESS} task(s) completed`}>
@@ -58,6 +46,14 @@ export function Footer() {
               <Text fz="sm">{data.SUCCESS}</Text>
             </Group>
           </Tooltip>
+          {data.FAILED && (
+            <Tooltip label={`${data.FAILED} task(s) failed`}>
+              <Group gap={5}>
+                <IconWrapper icon={IconCircleX} color="red" size={16} />
+                <Text fz="sm">{data.FAILED}</Text>
+              </Group>
+            </Tooltip>
+          )}
 
           <Tooltip label={`${data.RUNNING} task(s) in progress`}>
             <Group gap={5}>

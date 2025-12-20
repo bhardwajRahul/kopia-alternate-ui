@@ -1,5 +1,6 @@
 import {
   Anchor,
+  Badge,
   Button,
   Container,
   Divider,
@@ -15,17 +16,18 @@ import {
   IconEye,
   IconFileDatabase,
   IconFolderOpen,
+  IconRefreshAlert,
 } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { newActionProps, refreshButtonProps } from "../core/commonButtons";
 import { useAppContext } from "../core/context/AppContext";
+import { useServerInstanceContext } from "../core/context/ServerInstanceContext";
 import { DataGrid } from "../core/DataGrid/DataGrid";
 import { ErrorAlert } from "../core/ErrorAlert/ErrorAlert";
 import useApiRequest from "../core/hooks/useApiRequest";
 import { useInterval } from "../core/hooks/useInterval";
 import IconWrapper from "../core/IconWrapper";
-import kopiaService from "../core/kopiaService";
 import { MenuButton } from "../core/MenuButton/MenuButton";
 import RelativeDate from "../core/RelativeDate";
 import type { SourceInfo, Sources } from "../core/types";
@@ -36,6 +38,7 @@ import UploadingLoader from "./components/UploadingLoader";
 import NewSnapshotModal from "./modals/NewSnapshotModal";
 
 function SnapshotsPage() {
+  const { kopiaService } = useServerInstanceContext();
   const [show, setShow] = useDisclosure();
   const { pageSize: tablePageSize, bytesStringBase2 } = useAppContext();
   const [data, setData] = useState<Sources>();
@@ -99,14 +102,19 @@ function SnapshotsPage() {
       execute(undefined, "refresh");
     },
   });
-
+  const syncAction = useApiRequest({
+    action: () => kopiaService.syncRepo(),
+    onReturn() {
+      execute(undefined, "refresh");
+    },
+  });
   const intError = error || newSnapshotError;
 
   return (
     <Container fluid>
       <Stack>
         <Title order={1}>Snapshots</Title>
-        <Group justify="space-between">
+        <Group justify={data?.multiUser === false ? "end" : "space-between"}>
           {data?.multiUser === true && (
             <MenuButton
               options={[
@@ -136,6 +144,15 @@ function SnapshotsPage() {
               {...refreshButtonProps}
             >
               Refresh
+            </Button>
+            <Button
+              loading={syncAction.loading}
+              onClick={() => syncAction.execute()}
+              {...refreshButtonProps}
+              leftSection={<IconRefreshAlert size={16} />}
+              color="grape"
+            >
+              Sync
             </Button>
           </Group>
         </Group>
@@ -175,7 +192,23 @@ function SnapshotsPage() {
               accessor: "owner",
               visibleMediaQuery: (theme) =>
                 `(min-width: ${theme.breakpoints.md})`,
-              render: (item) => `${item.source.userName}@${item.source.host}`,
+              render: (item) =>
+                item.status === "REMOTE" ? (
+                  <Group gap="xs" align="center">
+                    <Text fz="sm">{`${item.source.userName}@${item.source.host}`}</Text>
+                    <Badge
+                      size="sm"
+                      radius={5}
+                      tt="none"
+                      variant="light"
+                      color="grape"
+                    >
+                      Remote
+                    </Badge>
+                  </Group>
+                ) : (
+                  `${item.source.userName}@${item.source.host}`
+                ),
             },
             {
               accessor: "lastSnapshot.rootEntry.summ.size",
@@ -213,9 +246,22 @@ function SnapshotsPage() {
               render: (item) => {
                 switch (item.status) {
                   case "IDLE":
-                  case "PAUSED": {
+                  case "PAUSED":
+                  case "REMOTE": {
                     return (
                       <Group justify="end">
+                        {item.status !== "REMOTE" && (
+                          <Button
+                            size="xs"
+                            leftSection={<IconArchive size={14} />}
+                            variant="subtle"
+                            color="green"
+                            loading={startSnapshotLoading}
+                            onClick={() => newSnapshot(item.source)}
+                          >
+                            Snapshot Now
+                          </Button>
+                        )}
                         <Button
                           component={Link}
                           to={{
@@ -232,16 +278,6 @@ function SnapshotsPage() {
                           variant="subtle"
                         >
                           Policy
-                        </Button>
-                        <Button
-                          size="xs"
-                          leftSection={<IconArchive size={14} />}
-                          variant="subtle"
-                          color="green"
-                          loading={startSnapshotLoading}
-                          onClick={() => newSnapshot(item.source)}
-                        >
-                          Snapshot Now
                         </Button>
                       </Group>
                     );
@@ -266,7 +302,6 @@ function SnapshotsPage() {
                       />
                     );
                   }
-
                   default:
                     return item.status;
                 }

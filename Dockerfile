@@ -24,12 +24,13 @@ RUN adduser -D -H -u 1001 -s /sbin/nologin webuser
 
 # Create app directory
 RUN mkdir -p /app/www
+RUN mkdir -p /app/config
 
 # Copy built assets from build stage
 COPY --from=build /app/dist /app/www
 
 # Copy nginx config template
-COPY docker/nginx.conf /etc/nginx/templates/default.conf.template
+#COPY docker/nginx.conf /etc/nginx/templates/default.conf.template
 
 # Set correct ownership and permissions
 RUN chown -R webuser:webuser /app/www && \
