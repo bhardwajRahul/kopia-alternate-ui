@@ -1,3 +1,5 @@
+import { t } from '@lingui/core/macro';
+import { Trans } from '@lingui/react/macro';
 import {
   Button,
   Checkbox,
@@ -5,6 +7,7 @@ import {
   Loader,
   Select,
   Stack,
+  Text,
   useMantineColorScheme,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -15,7 +18,7 @@ import { useServerInstanceContext } from "../core/context/ServerInstanceContext"
 import useApiRequest from "../core/hooks/useApiRequest";
 import type { Preferences } from "../core/types";
 import { parseColorScheme } from "../utils/parseColorScheme";
-
+import supportedLocales from './locales';
 type PreferencesForm = {
   bytesStringBase2: string;
   theme: string;
@@ -67,8 +70,8 @@ function AppearanceSection() {
     action: (prefs?: Preferences) => kopiaService.setPreferences(prefs!),
     onReturn() {
       showNotification({
-        title: "Updated",
-        message: "Preferences updated",
+        title: t`Updated`,
+        message: t`Preferences updated`,
         color: "green",
       });
       reloadPreferences();
@@ -88,22 +91,23 @@ function AppearanceSection() {
     return <Loader />;
   }
 
+
   return (
     <form onSubmit={form.onSubmit(submitForm)}>
       <Stack>
         <Group grow>
           <Select
-            label="Theme"
+            label={t`Theme`}
             data={[
-              { label: "Light", value: "light" },
-              { label: "Dark", value: "dark" },
+              { label: t`Light`, value: "light" },
+              { label: t`Dark`, value: "dark" },
             ]}
             allowDeselect={false}
             withCheckIcon={false}
             {...form.getInputProps("theme")}
           />
           <Select
-            label="Byte representation"
+            label={t`Byte representation`}
             data={[
               {
                 label: "Base-2 (KiB, MiB, GiB, TiB)",
@@ -118,7 +122,7 @@ function AppearanceSection() {
         </Group>
         <Group grow>
           <Select
-            label="Default page size"
+            label={t`Default page size`}
             data={[
               { label: "10", value: "10" },
               { label: "20", value: "20" },
@@ -132,23 +136,26 @@ function AppearanceSection() {
             {...form.getInputProps("pageSize")}
           />
           <Select
-            label="Locale"
-            data={[
-              { label: "English", value: "en" },
-              { label: "Norsk - Bokmål", value: "nb" },
-              { label: "Norsk - Nynorsk", value: "nn" },
-            ]}
+            label={t`Locale`}
+            data={Object.keys(supportedLocales).map(x => ({ label: supportedLocales[x].name, value: x }))}
             allowDeselect={false}
             withCheckIcon={false}
+            renderOption={(o) => {
+              const { flag: Flag } = supportedLocales[o.option.value];
+              return <Group wrap="nowrap" gap={4}>
+                <Flag style={{ height: 12, width: 20 }} />
+                <Text fz="sm">{o.option.label}</Text>
+              </Group>
+            }}
             {...form.getInputProps("locale")}
           />
         </Group>
-        <Checkbox label="Show all snapshots by default"
+        <Checkbox label={t`Show all snapshots by default`}
           {...form.getInputProps("defaultSnapshotViewAll", { type: "checkbox" })}
         />
         <Group justify="flex-end" p="sm">
           <Button type="submit" color="green">
-            Save
+            <Trans>Save</Trans>
           </Button>
         </Group>
       </Stack>

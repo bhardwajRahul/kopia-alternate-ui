@@ -1,3 +1,5 @@
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import { Group, PasswordInput, Stack, Text, TextInput } from "@mantine/core";
 import type { UseFormReturnType } from "@mantine/form";
 import { IconInfoCircle } from "@tabler/icons-react";
@@ -13,33 +15,33 @@ function BackblazeB2Repo({ form }: Props) {
     <Stack>
       <Group>
         <IconWrapper icon={IconInfoCircle} size={32} color="red" />
-        <Text fw="bold">Backblaze B2</Text>
+        <Text fw="bold"><Trans>Backblaze B2</Trans></Text>
       </Group>
 
       <Stack>
         <Group grow>
           <TextInput
-            label="Bucket"
-            placeholder="Enter bucket name"
+            label={t`Bucket`}
+            placeholder={t`Enter bucket name`}
             withAsterisk
             {...form.getInputProps("providerConfig.bucket")}
           />
           <TextInput
-            label="Object Name Prefix"
-            placeholder="Enter object name prefix (optional)"
+            label={t`Object Name Prefix`}
+            placeholder={t`Enter object name prefix (optional)`}
             {...form.getInputProps("providerConfig.prefix")}
           />
         </Group>
         <Group grow>
           <TextInput
-            label="Key ID"
-            placeholder="Enter application or account key ID"
+            label={t`Key ID`}
+            placeholder={t`Enter application or account key ID`}
             withAsterisk
             {...form.getInputProps("providerConfig.keyId")}
           />
           <PasswordInput
-            label="Key"
-            placeholder="Enter application or account key"
+            label={t`Key`}
+            placeholder={t`Enter application or account key`}
             withAsterisk
             {...form.getInputProps("providerConfig.key")}
           />

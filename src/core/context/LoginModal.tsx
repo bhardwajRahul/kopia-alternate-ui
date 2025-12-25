@@ -1,3 +1,5 @@
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import {
   Button,
   Group,
@@ -45,9 +47,11 @@ export default function LoginModal({ instance, onLogin, error }: Props) {
     onLogin(values.username, values.password);
   }
 
+  const instanceName = instance?.name || "Unknown";
+
   return (
     <Modal
-      title={`Login to ${instance?.name}`}
+      title={t`Login to ${instanceName}`}
       onClose={() => console.log()}
       opened
       styles={modalBaseStyles}
@@ -63,14 +67,14 @@ export default function LoginModal({ instance, onLogin, error }: Props) {
         <Stack w="100%">
           <ErrorAlert error={error} />
           <TextInput
-            label="Username"
+            label={<Trans>Username</Trans>}
             withAsterisk
-            placeholder="Username"
+            placeholder={t`Username`}
             {...form.getInputProps("username")}
           />
           <PasswordInput
-            label="Password"
-            placeholder="Password"
+            label={<Trans>Password</Trans>}
+            placeholder={t`Password`}
             withAsterisk
             {...form.getInputProps("password")}
           />
@@ -91,7 +95,7 @@ export default function LoginModal({ instance, onLogin, error }: Props) {
           form="login-form"
           disabled={!form.isValid()}
         >
-          Login
+          <Trans>Login</Trans>
         </Button>
       </Group>
     </Modal>

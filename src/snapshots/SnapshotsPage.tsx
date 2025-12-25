@@ -1,3 +1,5 @@
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
 import {
   Anchor,
   Badge,
@@ -122,8 +124,8 @@ function SnapshotsPage() {
     onReturn() {
       execute(undefined, "refresh");
       showNotification({
-        title: "Repository synchronized",
-        message: "The repository was synchronized successfully",
+        title: t`Repository synchronized`,
+        message: t`The repository was synchronized successfully`,
         color: "green",
         icon: <IconCircleCheck size={16} />
       });
@@ -134,13 +136,15 @@ function SnapshotsPage() {
   return (
     <Container fluid>
       <Stack>
-        <Title order={1}>Snapshots</Title>
+        <Title order={1}>
+          <Trans>Snapshots</Trans>
+        </Title>
         <Group justify={data?.multiUser === false ? "end" : "space-between"}>
           {data?.multiUser === true && (
             <MenuButton
               options={[
-                { label: "All Snapshots", value: "all" },
-                { label: "Local Snapshots", value: "local" },
+                { label: <Trans>All Snapshots</Trans>, value: "all" },
+                { label: <Trans>Local Snapshots</Trans>, value: "local" },
                 { label: "", value: "divider" },
                 ...uniqueOwners.map((own) => ({
                   label: own,
@@ -157,14 +161,14 @@ function SnapshotsPage() {
               onClick={setShow.open}
               {...newActionProps}
             >
-              New Snapshot
+              <Trans>New Snapshot</Trans>
             </Button>
             <Button
               loading={loading && loadingKey === "refresh"}
               onClick={() => execute(undefined, "refresh")}
               {...refreshButtonProps}
             >
-              Refresh
+              <Trans>Refresh</Trans>
             </Button>
             <Button
               loading={syncAction.loading}
@@ -173,7 +177,7 @@ function SnapshotsPage() {
               leftSection={<IconRefreshAlert size={16} />}
               color="grape"
             >
-              Sync
+              <Trans>Sync</Trans>
             </Button>
           </Group>
         </Group>
@@ -191,7 +195,7 @@ function SnapshotsPage() {
           columns={[
             {
               accessor: "source.path",
-              title: "Path",
+              title: <Trans>Path</Trans>,
               sortable: true,
               render: (item) => (
                 <Group gap="5">
@@ -213,6 +217,7 @@ function SnapshotsPage() {
             },
             {
               accessor: "owner",
+              title: <Trans>Owner</Trans>,
               sortable: true,
               visibleMediaQuery: (theme) =>
                 `(min-width: ${theme.breakpoints.md})`,
@@ -227,7 +232,7 @@ function SnapshotsPage() {
                       variant="light"
                       color="grape"
                     >
-                      Remote
+                      <Trans>Remote</Trans>
                     </Badge>
                   </Group>
                 ) : (
@@ -237,7 +242,7 @@ function SnapshotsPage() {
             {
               accessor: "lastSnapshot.rootEntry.summ.size",
               sortable: true,
-              title: "Size",
+              title: <Trans>Size</Trans>,
               visibleMediaQuery: (theme) =>
                 `(min-width: ${theme.breakpoints.md})`,
               render: (item) =>
@@ -250,7 +255,7 @@ function SnapshotsPage() {
             {
               accessor: "lastSnapshot.startTime",
               sortable: true,
-              title: "Last Snapshot",
+              title: <Trans>Last Snapshot</Trans>,
               render: (item) =>
                 item.lastSnapshot && (
                   <RelativeDate value={item.lastSnapshot.startTime} />
@@ -258,6 +263,7 @@ function SnapshotsPage() {
             },
             {
               accessor: "nextSnapshotTime",
+              title: <Trans>Next snapshot</Trans>,
               render: (item) =>
                 item.nextSnapshotTime && (
                   <RelativeDate value={item.nextSnapshotTime} />
@@ -285,7 +291,7 @@ function SnapshotsPage() {
                             loading={startSnapshotLoading}
                             onClick={() => newSnapshot(item.source)}
                           >
-                            Snapshot Now
+                            <Trans>Snapshot Now</Trans>
                           </Button>
                         )}
                         <Button
@@ -302,7 +308,7 @@ function SnapshotsPage() {
                           leftSection={<IconEye size={14} />}
                           variant="subtle"
                         >
-                          Policy
+                          <Trans>View Policy</Trans>
                         </Button>
                       </Group>
                     );
@@ -315,7 +321,7 @@ function SnapshotsPage() {
                           color="yellow"
                         />
                         <Text fz="xs" c="yellow">
-                          Pending
+                          <Trans>Pending</Trans>
                         </Text>
                       </Group>
                     );

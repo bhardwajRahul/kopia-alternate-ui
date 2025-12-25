@@ -1,3 +1,4 @@
+import { t } from "@lingui/core/macro";
 import {
   Anchor,
   AppShellHeader,
@@ -31,25 +32,25 @@ export function Header() {
     return [
       {
         link: "/snapshots",
-        label: "Snapshots",
+        label: t`Snapshots`,
         disabled: !repoStatus.connected,
         icon: IconPackage,
       },
       {
         link: "/mounts",
-        label: "Mounts",
+        label: t`Mounts`,
         disabled: !repoStatus.connected,
         icon: IconFolderBolt,
       },
       {
         link: "/policies",
-        label: "Policies",
+        label: t`Policies`,
         disabled: !repoStatus.connected,
         icon: IconFileCertificate,
       },
-      { link: "/tasks", label: "Tasks", icon: IconClipboardCheck },
-      { link: "/repo", label: "Repository", icon: IconDatabase },
-      { link: "/preferences", label: "Preferences", icon: IconSettings },
+      { link: "/tasks", label: t`Tasks`, icon: IconClipboardCheck },
+      { link: "/repo", label: t`Repository`, icon: IconDatabase },
+      { link: "/preferences", label: t`Preferences`, icon: IconSettings },
       {
         link: "ext:https://github.com/joachimdalen/kopia-alternate-ui",
         label: "GitHub",
@@ -87,7 +88,7 @@ export function Header() {
 
   return (
     <AppShellHeader className={classes.header}>
-      <Container size="md" className={classes.inner}>
+      <Container size="md" fluid className={classes.inner}>
         <Box>
           <Link to="/" className={classes.title}>
             <Text fw="bold" c="white" fz="lg">
